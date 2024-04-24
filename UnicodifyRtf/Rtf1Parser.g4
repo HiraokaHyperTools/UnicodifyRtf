@@ -7,4 +7,4 @@ options {
 document: node* EOF;
 node: escape | Open | Close | Text | NL;
 
-escape: Escape (Hex | Asterisk | Control);
+escape: Escape (Hex | Asterisk | Control | Escaped);

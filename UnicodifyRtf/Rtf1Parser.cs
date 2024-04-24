@@ -36,8 +36,8 @@ public partial class Rtf1Parser : Parser {
 	protected static DFA[] decisionToDFA;
 	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
-		Escape=1, Open=2, Close=3, NL=4, Text=5, Hex=6, Asterisk=7, Control=8, 
-		Key=9, Value=10;
+		Escape=1, Open=2, Close=3, NL=4, Text=5, Hex=6, Asterisk=7, Escaped=8, 
+		Control=9, Key=10, Value=11;
 	public const int
 		RULE_document = 0, RULE_node = 1, RULE_escape = 2;
 	public static readonly string[] ruleNames = {
@@ -48,8 +48,8 @@ public partial class Rtf1Parser : Parser {
 		null, "'\\'", "'{'", "'}'", null, null, null, "'*'"
 	};
 	private static readonly string[] _SymbolicNames = {
-		null, "Escape", "Open", "Close", "NL", "Text", "Hex", "Asterisk", "Control", 
-		"Key", "Value"
+		null, "Escape", "Open", "Close", "NL", "Text", "Hex", "Asterisk", "Escaped", 
+		"Control", "Key", "Value"
 	};
 	public static readonly IVocabulary DefaultVocabulary = new Vocabulary(_LiteralNames, _SymbolicNames);
 
@@ -213,6 +213,7 @@ public partial class Rtf1Parser : Parser {
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Hex() { return GetToken(Rtf1Parser.Hex, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Asterisk() { return GetToken(Rtf1Parser.Asterisk, 0); }
 		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Control() { return GetToken(Rtf1Parser.Control, 0); }
+		[System.Diagnostics.DebuggerNonUserCode] public ITerminalNode Escaped() { return GetToken(Rtf1Parser.Escaped, 0); }
 		public EscapeContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -232,7 +233,7 @@ public partial class Rtf1Parser : Parser {
 			Match(Escape);
 			State = 22;
 			_la = TokenStream.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 448L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 960L) != 0)) ) {
 			ErrorHandler.RecoverInline(this);
 			}
 			else {
@@ -253,9 +254,9 @@ public partial class Rtf1Parser : Parser {
 	}
 
 	private static int[] _serializedATN = {
-		4,1,10,25,2,0,7,0,2,1,7,1,2,2,7,2,1,0,5,0,8,8,0,10,0,12,0,11,9,0,1,0,1,
+		4,1,11,25,2,0,7,0,2,1,7,1,2,2,7,2,1,0,5,0,8,8,0,10,0,12,0,11,9,0,1,0,1,
 		0,1,1,1,1,1,1,1,1,1,1,3,1,20,8,1,1,2,1,2,1,2,1,2,0,0,3,0,2,4,0,1,1,0,6,
-		8,26,0,9,1,0,0,0,2,19,1,0,0,0,4,21,1,0,0,0,6,8,3,2,1,0,7,6,1,0,0,0,8,11,
+		9,26,0,9,1,0,0,0,2,19,1,0,0,0,4,21,1,0,0,0,6,8,3,2,1,0,7,6,1,0,0,0,8,11,
 		1,0,0,0,9,7,1,0,0,0,9,10,1,0,0,0,10,12,1,0,0,0,11,9,1,0,0,0,12,13,5,0,
 		0,1,13,1,1,0,0,0,14,20,3,4,2,0,15,20,5,2,0,0,16,20,5,3,0,0,17,20,5,5,0,
 		0,18,20,5,4,0,0,19,14,1,0,0,0,19,15,1,0,0,0,19,16,1,0,0,0,19,17,1,0,0,

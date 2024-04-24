@@ -2,7 +2,7 @@
   "profiles": {
     "UnicodifyRtf": {
       "commandName": "Project",
-      "commandLineArgs": "X:\\Proj\\UnicodifyRtf\\UnicodifyRtf\\Rtf1.rtf Out.rtf"
+      "commandLineArgs": "X:\\Proj\\NewWinbkSetup5\\README.rtf Out.rtf"
     }
   }
 }

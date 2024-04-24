@@ -27,6 +27,10 @@ namespace UnicodifyRtf
 
         private static int Main(string[] args)
         {
+#if NET6_0_OR_GREATER
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
+
             return CommandLine.Parser.Default.ParseArguments<ConvertOpt>(args)
                 .MapResult<ConvertOpt, int>(
                     DoConvert,
@@ -91,13 +95,26 @@ namespace UnicodifyRtf
                 }
             }
 
+            void WriteInner(char chr)
+            {
+                switch (chr)
+                {
+                    case '{': writer.Write("\\{"); break;
+                    case '}': writer.Write("\\}"); break;
+                    case '\\': writer.Write("\\\\"); break;
+                    default: writer.Write(chr); break;
+                }
+            }
             void ConsumeText(string text)
             {
                 if (!enableConversion)
                 {
                     // e.g.
                     // {\rtf1 ... {\fonttbl{\f0\fnil\fcharset128 Arial Unicode MS;} ... }
-                    writer.Write(text);
+                    foreach (var chr in text)
+                    {
+                        WriteInner(chr);
+                    }
                 }
                 else
                 {
@@ -111,15 +128,22 @@ namespace UnicodifyRtf
             }
             void FlushText()
             {
+                var needsSpace = false;
                 foreach (var chr in GetEncodingFromActiveFontCharset().GetString(bytes.ToArray()))
                 {
                     if (chr < 0x20 || 0x80 <= chr)
                     {
                         writer.Write("\\u{0}?", (int)chr);
+                        needsSpace = true;
                     }
                     else
                     {
-                        writer.Write(chr);
+                        if (needsSpace)
+                        {
+                            WriteInner(' ');
+                            needsSpace = false;
+                        }
+                        WriteInner(chr);
                     }
                 }
                 bytes.SetLength(0);
@@ -137,7 +161,7 @@ namespace UnicodifyRtf
                     FlushText();
                     writer.Write("{");
                     depth += 1;
-                    tagTree.Add(null);
+                    tagTree.Add(new WordN("", null));
                     nextFirstTag = true;
                 }
                 else if (node.Close() != null)
@@ -178,7 +202,13 @@ namespace UnicodifyRtf
                                 .ForEach(
                                     pair => pair.Watcher.TryToOpenTree?.Invoke(
                                         tagTree.ToArray(),
-                                        it => newWatchers.Add(new PositionedWatcher(it, depth))
+                                        it =>
+                                        {
+                                            if (it != null)
+                                            {
+                                                newWatchers.Add(new PositionedWatcher(it, depth));
+                                            }
+                                        }
                                     )
                                 );
                             watchers.AddRange(newWatchers);
@@ -191,7 +221,8 @@ namespace UnicodifyRtf
                         }
                     }
 
-                    if (escapeContext.Asterisk() is ITerminalNode aNode && aNode != null)
+                    if (false) { }
+                    else if (escapeContext.Asterisk() is ITerminalNode aNode && aNode != null)
                     {
                         var raw = aNode.GetText();
                         FlushText();
@@ -201,7 +232,7 @@ namespace UnicodifyRtf
 
                         nextFirstTag = false;
                     }
-                    if (escapeContext.Hex() is ITerminalNode hexNode && hexNode != null)
+                    else if (escapeContext.Hex() is ITerminalNode hexNode && hexNode != null)
                     {
                         var raw = hexNode.GetText();
                         var n = Convert.ToByte(raw.Substring(1), 16);
@@ -211,7 +242,13 @@ namespace UnicodifyRtf
                             .ForEach(it => it.Watcher.Tag?.Invoke(new WordN(raw.Substring(0, 1), n)));
                         nextFirstTag = false;
                     }
-                    if (escapeContext.Control() is ITerminalNode controlNode && controlNode != null)
+                    else if (escapeContext.Escaped() is ITerminalNode escapedNode && escapedNode != null)
+                    {
+                        var raw = escapedNode.GetText();
+                        ConsumeText("" + raw);
+                        nextFirstTag = false;
+                    }
+                    else if (escapeContext.Control() is ITerminalNode controlNode && controlNode != null)
                     {
                         FlushText();
                         writer.Write("\\" + controlNode.GetText());

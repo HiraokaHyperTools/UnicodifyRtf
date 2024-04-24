@@ -10,6 +10,7 @@ mode EscapeMode;
 
 Hex: '\'' [0-9a-fA-F] [0-9a-fA-F] -> popMode;
 Asterisk: '*' -> popMode;
+Escaped: [{}\\] -> popMode;
 Control: Key Value? -> popMode;
 Key: [a-zA-Z]+;
 Value: [0-9]+;
