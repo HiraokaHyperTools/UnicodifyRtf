@@ -1,0 +1,14 @@
+Escape=1
+Open=2
+Close=3
+NL=4
+Text=5
+Hex=6
+Asterisk=7
+Control=8
+Key=9
+Value=10
+'\\'=1
+'{'=2
+'}'=3
+'*'=7

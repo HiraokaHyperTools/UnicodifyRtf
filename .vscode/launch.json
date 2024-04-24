@@ -1,0 +1,14 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+        {
+            "name": "Debug ANTLR4 grammar",
+            "type": "antlr-debug",
+            "request": "launch",
+            "input": "UnicodifyRtf/Rtf1.rtf",
+            "grammar": "UnicodifyRtf/Rtf1Parser.g4",
+            "printParseTree": true,
+            "visualParseTree": true
+        },
+    ]
+}

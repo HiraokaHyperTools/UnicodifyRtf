@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UnicodifyRtf": {
+      "commandName": "Project",
+      "commandLineArgs": "X:\\Proj\\UnicodifyRtf\\UnicodifyRtf\\Rtf1.rtf Out.rtf"
+    }
+  }
+}
